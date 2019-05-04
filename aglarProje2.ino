@@ -8,7 +8,7 @@
 #define trigpin A1 // Trigger pin
 
   SoftwareSerial BT(9, 10);
-  int state; //Bluetooth cihazından gelecek sinyalin değişkeni
+  int state; //Variable of the signal from the Bluetooth device
   int timer = 0;
   int distance;
   long duration;
@@ -35,27 +35,54 @@
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //Gelen veriyi 'state' değişkenine kaydet
+  //Save incoming data to 'state' variable
   if (BT.available() > 0) {
     state = Serial.read();
   }
      distance = data();
-    if (state == 10) { //ileri git
-      forward();
-    }
+  
+   if ((distance < set) && (chk == 1)) {
+    chk = 2; Serial.print(distance);
+    Stop(); 
+  }
+  
+  if (distance > set) {
+    chk = 0;
+  }
+     if (state == 10 && (chk == 0)) { //Go forward
+       chk = 1;
+       forward();
+      }
 
-    else if (state == 20) { //geri git
-      back();
+      else if (state == 20) { //go back
+        back();
+      }
+      else if (state == 30) { //turn left
+        turnLeft();
+       }
+      else if (state == 40) { //turn right
+        turnRight();
+      }
+      else {
+        Stop();
+      }
+  
+  timer = timer + 1;
+  //Serial.println(timer);
+  if (timer == 200)
+  {
+    if (distance > 200) {
+      distance = 200;
     }
-    else if (state == 30) { //sola git
-      turnLeft();
-    }
-    else if (state == 40) { //sağa git
-      turnRight();
-    }
-    else {
-      Stop();
-    }
+    BT.print(distance); //send distance to MIT App
+  }
+
+  if (timer > 400)
+  {
+    timer = 0;
+  }
+  delay(1);
+
 
 }
 void Stop() {
