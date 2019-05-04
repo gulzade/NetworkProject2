@@ -4,17 +4,28 @@
 #define MotorL1 11
 #define MotorL2 12
 #define MotorLE 13
+#define echopin  A0 // echo pin
+#define trigpin A1 // Trigger pin
 
   SoftwareSerial BT(9, 10);
+  int state; //Bluetooth cihazından gelecek sinyalin değişkeni
+  int timer = 0;
+  int distance;
+  long duration;
+  int chk = 0;
+  int set = 15;
 
-int state; //Bluetooth cihazından gelecek sinyalin değişkeni
-void setup() {
+  void setup() {
+  pinMode (trigpin, OUTPUT); //ultrasonic sensor pin 
+  pinMode (echopin, INPUT ); //ultrasonic sensor pin 
+
   pinMode(MotorR1, OUTPUT);
   pinMode(MotorR2, OUTPUT);
   pinMode(MotorRE, OUTPUT);
   pinMode(MotorL1, OUTPUT);
   pinMode(MotorL2, OUTPUT);
   pinMode(MotorLE, OUTPUT);
+    
   Serial.begin(9600);
   BT.begin(9600); // Setting the baud rate of Software Serial Library
   delay(500);
@@ -28,6 +39,7 @@ void loop() {
   if (BT.available() > 0) {
     state = Serial.read();
   }
+     distance = data();
     if (state == 10) { //ileri git
       forward();
     }
