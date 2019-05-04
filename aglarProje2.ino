@@ -1,9 +1,12 @@
-#define MotorR1 11
-#define MotorR2 12
-#define MotorRE 13
-#define MotorL1 4
-#define MotorL2 5
-#define MotorLE 3
+#define MotorR1 4
+#define MotorR2 5
+#define MotorRE 3
+#define MotorL1 11
+#define MotorL2 12
+#define MotorLE 13
+
+  SoftwareSerial BT(9, 10);
+
 int state; //Bluetooth cihazından gelecek sinyalin değişkeni
 void setup() {
   pinMode(MotorR1, OUTPUT);
@@ -12,17 +15,19 @@ void setup() {
   pinMode(MotorL1, OUTPUT);
   pinMode(MotorL2, OUTPUT);
   pinMode(MotorLE, OUTPUT);
-  // 9600 baud hızında bir seri port açalım
   Serial.begin(9600);
+  BT.begin(9600); // Setting the baud rate of Software Serial Library
+  delay(500);
+ 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
   //Gelen veriyi 'state' değişkenine kaydet
-  if (Serial.available() > 0) {
+  if (BT.available() > 0) {
     state = Serial.read();
-
+  }
     if (state == 10) { //ileri git
       forward();
     }
@@ -39,7 +44,7 @@ void loop() {
     else {
       Stop();
     }
-  }
+
 }
 void Stop() {
   digitalWrite(MotorR1, LOW);
