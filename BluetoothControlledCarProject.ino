@@ -1,9 +1,11 @@
+#include <SoftwareSerial.h>
 #define MotorR1 4
 #define MotorR2 5
 #define MotorRE 3
 #define MotorL1 11
 #define MotorL2 12
 #define MotorLE 13
+int buzzerPin = 7;
 #define echopin  A0 // echo pin
 #define trigpin A1 // Trigger pin
 
@@ -18,14 +20,25 @@
   void setup() {
   pinMode (trigpin, OUTPUT); //ultrasonic sensor pin 
   pinMode (echopin, INPUT ); //ultrasonic sensor pin 
-
-  pinMode(MotorR1, OUTPUT);
+    
+  pinMode(buzzerPin, OUTPUT); //Buzzer pin
+    
+  pinMode(MotorR1, OUTPUT);  //Motor pins  //right
   pinMode(MotorR2, OUTPUT);
   pinMode(MotorRE, OUTPUT);
-  pinMode(MotorL1, OUTPUT);
+  pinMode(MotorL1, OUTPUT);  //Motor pins  //left
   pinMode(MotorL2, OUTPUT);
   pinMode(MotorLE, OUTPUT);
     
+  //initial state =stop
+  digitalWrite(MotorR1, LOW);
+  digitalWrite(MotorR2, LOW);
+  digitalWrite(MotorRE, LOW);
+
+  digitalWrite(MotorL1, LOW);
+  digitalWrite(MotorL2, LOW);
+  digitalWrite(MotorLE, LOW);
+   
   Serial.begin(9600);
   BT.begin(9600); // Setting the baud rate of Software Serial Library
   delay(500);
@@ -41,9 +54,9 @@ void loop() {
   }
      distance = data();
   
-   if ((distance < set) && (chk == 1)) {
+   if ((distance < set) && (chk == 1)) {// alarms and stops when the distance value falls below 15 and 
     chk = 2; Serial.print(distance);
-    Stop(); 
+    Stop(); alert();
   }
   
   if (distance > set) {
@@ -134,4 +147,22 @@ void turnLeft() {
   digitalWrite(MotorL2, HIGH);
   digitalWrite(MotorLE, 150);
 
+}
+long data() //distance calculation
+{
+  digitalWrite(trigpin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigpin, HIGH);
+  delayMicroseconds(10);
+  duration = pulseIn (echopin, HIGH);
+  return duration / 29 / 2;
+}
+void alert() { //alarm code
+
+  digitalWrite(buzzerPin, HIGH);
+  delay(1000);
+  digitalWrite(buzzerPin, LOW);
+ 
+ 
+  
 }
